@@ -107,7 +107,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         startCommandRecieved(msg);
                         break;
                     default:
-                        sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
+                        sendMessage(update.getMessage().getChatId(), userName + "(" + userFirstName + ", нарываешься! Только кружки ;)", userName);
                 }
 
             } else if (msg.hasVideoNote()) {
@@ -129,7 +129,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (ud.getId() == 0) {
             ud.setId(userDataRepository.count() + 1);
             ud.setUserId(msg.getFrom().getId());
-            ud.setDate(Calendar.getInstance());
+            ud.setDate(nowDate);
             ud.setMessageCount(1);
             ud.setPidor(false);
         } else {

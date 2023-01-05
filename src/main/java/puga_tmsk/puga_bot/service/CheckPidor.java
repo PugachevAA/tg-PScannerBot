@@ -108,7 +108,7 @@ public class CheckPidor {
                 user.setPidorNow(true);
                 telegramBot.getUserRepository().save(user);
                 telegramBot.getUserDataRepository().save(newUd);
-                telegramBot.sendMessage(telegramBot.config.getChatId(), "А вот и новый пидарок нарисовался! Встречайте, @" +
+                telegramBot.sendMessage(telegramBot.config.getChatId(), "А вот и новый пидарок нарисовался! Встречайте, @" + ", " + user.getFirstName() +
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
                         " перехватывает знамя. Это, кстати, уже его " + user.getPidorCount() + " раз.", "");
             }
