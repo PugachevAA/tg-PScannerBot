@@ -110,7 +110,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         break;
                     case "/mydata":
                     case "/mydata@pidor_scanner_bot":
-                        getMyData(userId);
+                        getMyData(chatId, userId);
                         break;
                     default:
                         sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
@@ -125,7 +125,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void getMyData(long userId) {
+    private void getMyData(long chatId, long userId) {
         log.info("[MAIN] check /mydata");
         sendMessage(chatId, userRepository.findById(userId).toString(),"");
     }
@@ -175,7 +175,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (!checkPidor.isCheckPidorStatus()) {
             checkPidor.startCheckPidor();
             answer = "Здарова, бедолаги :) \n\n"
-                    + "Теперь я буду считать ваши кружки, сообще кто объебался, и какой это по счету раз. Погнали)";
+                    + "Теперь я буду считать ваши кружки, сообщать кто объебался, и какой это по счету раз. Погнали)";
 
         } else {
             answer = "Функция ПидорСканнер уже запущена.";
