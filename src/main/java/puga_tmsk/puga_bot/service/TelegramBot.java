@@ -109,7 +109,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                         startCommandRecieved(msg);
                         break;
                     case "/mydata":
+                    case "/mydata@pidor_scanner_bot":
                         getMyData(userId);
+                        break;
                     default:
                         sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
                 }
@@ -124,6 +126,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void getMyData(long userId) {
+        log.info("[MAIN] check /mydata");
         sendMessage(chatId, userRepository.findById(userId).toString(),"");
     }
 
