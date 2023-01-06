@@ -28,19 +28,19 @@ public class CheckPidor {
             @Override
             public void run() {
                 Calendar checkDate = Calendar.getInstance();
+                checkDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
                 checkDate.set(Calendar.HOUR_OF_DAY, 0);
                 checkDate.set(Calendar.MINUTE, 0);
                 checkDate.set(Calendar.SECOND, 0);
                 checkDate.set(Calendar.MILLISECOND, 0);
                 checkDate.add(Calendar.DATE, - 1);
-                checkDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
 
                 Calendar today = Calendar.getInstance();
+                today.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
                 today.set(Calendar.HOUR_OF_DAY, 0);
                 today.set(Calendar.MINUTE, 0);
                 today.set(Calendar.SECOND, 0);
                 today.set(Calendar.MILLISECOND, 0);
-                today.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
 
                 try {
                     Thread.sleep(8000);
