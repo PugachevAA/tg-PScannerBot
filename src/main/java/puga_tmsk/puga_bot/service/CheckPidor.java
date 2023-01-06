@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import puga_tmsk.puga_bot.model.User;
 import puga_tmsk.puga_bot.model.UserData;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 @Slf4j
 @Getter
@@ -16,6 +18,8 @@ public class CheckPidor {
     private Thread thread;
     private TelegramBot telegramBot;
     private boolean checkPidorStatus = false;
+
+//    final private int TIME_ZONE = -4;
 
     public CheckPidor(TelegramBot tgb) {
         this.telegramBot = tgb;
@@ -29,12 +33,14 @@ public class CheckPidor {
                 checkDate.set(Calendar.SECOND, 0);
                 checkDate.set(Calendar.MILLISECOND, 0);
                 checkDate.add(Calendar.DATE, - 1);
+                checkDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
 
                 Calendar today = Calendar.getInstance();
                 today.set(Calendar.HOUR_OF_DAY, 0);
                 today.set(Calendar.MINUTE, 0);
                 today.set(Calendar.SECOND, 0);
                 today.set(Calendar.MILLISECOND, 0);
+                today.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
 
                 try {
                     Thread.sleep(8000);

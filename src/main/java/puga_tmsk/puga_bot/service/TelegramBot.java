@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 @Slf4j
 @Component
@@ -79,10 +80,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
 
         Calendar nowDate = Calendar.getInstance();
-        nowDate.set(Calendar.HOUR_OF_DAY, 0);
+        nowDate.set(Calendar.HOUR_OF_DAY, -4);
         nowDate.set(Calendar.MINUTE, 0);
         nowDate.set(Calendar.SECOND, 0);
         nowDate.set(Calendar.MILLISECOND, 0);
+        nowDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
 
         log.info("[MAIN] Is updated. Now Date: " + nowDate.getTime());
         if (update.hasMessage()) {
@@ -106,8 +108,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                     case "/start@pidor_scanner_bot":
                         startCommandRecieved(msg);
                         break;
+                    case "/mydata":
+                        getMyData(userId);
                     default:
-                        sendMessage(update.getMessage().getChatId(), userName + "(" + userFirstName + ", нарываешься! Только кружки ;)", userName);
+                        sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
                 }
 
             } else if (msg.hasVideoNote()) {
@@ -117,6 +121,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 addUserMessageCount(userId, nowDate, msg);
             }
         }
+    }
+
+    private void getMyData(long userId) {
+        sendMessage(chatId, userRepository.findById(userId).toString(),"");
     }
 
     private void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
@@ -183,7 +191,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         try {
             execute(message);
-            log.info("[ANSWER: User " + userName + ", text: " + textToSend);
+            log.info("[MAIN] ANSWER: User " + userName + ", text: " + textToSend);
         }
         catch (TelegramApiException e) {
             log.error("send error:" + e);
