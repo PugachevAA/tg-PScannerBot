@@ -80,7 +80,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
 
         Calendar nowDate = Calendar.getInstance();
-        nowDate.set(Calendar.HOUR_OF_DAY, -4);
+        nowDate.set(Calendar.HOUR_OF_DAY, 0);
         nowDate.set(Calendar.MINUTE, 0);
         nowDate.set(Calendar.SECOND, 0);
         nowDate.set(Calendar.MILLISECOND, 0);
