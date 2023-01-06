@@ -25,7 +25,7 @@ public class User {
                 "Фамилия='" + lastName + '\n' +
                 "Логин='" + userName + '\n' +
                 "Дата регистрации=" + registerTime + '\n' +
-                "Был пидором " + registerTime + " раз";
+                "Был пидором " + pidorCount + " раз";
     }
 
 }

@@ -127,7 +127,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void getMyData(long chatId, long userId) {
         log.info("[MAIN] check /mydata");
-        sendMessage(chatId, userRepository.findById(userId).toString(),"");
+        sendMessage(chatId, userRepository.findById(userId).get().toString(),"");
     }
 
     private void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
