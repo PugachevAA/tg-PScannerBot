@@ -121,7 +121,7 @@ public class CheckPidor {
         } else {
             List<String> lastPidors = new ArrayList<>();
             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                if (ud.getDate().getTime().equals(checkDate.getTime())) {
+                if (ud.getDate().getTime().equals(checkDate.getTime()) && ud.isPidor()) {
                     lastPidors.add("@" + telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName());
                 }
             }
