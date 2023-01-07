@@ -34,7 +34,7 @@ public class CheckPidor {
                 }
 
                 Calendar checkDate = Calendar.getInstance();
-                checkDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
+                checkDate.setTimeZone(TimeZone.getTimeZone(tgb.config.getTimeZone()));
                 checkDate.set(Calendar.HOUR_OF_DAY, 0);
                 checkDate.set(Calendar.MINUTE, 0);
                 checkDate.set(Calendar.SECOND, 0);
@@ -42,7 +42,7 @@ public class CheckPidor {
                 checkDate.add(Calendar.DATE, - 1);
 
                 Calendar today = Calendar.getInstance();
-                today.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
+                today.setTimeZone(TimeZone.getTimeZone(tgb.config.getTimeZone()));
                 today.set(Calendar.HOUR_OF_DAY, 0);
                 today.set(Calendar.MINUTE, 0);
                 today.set(Calendar.SECOND, 0);
@@ -128,7 +128,7 @@ public class CheckPidor {
                 user.setPidorNow(true);
                 telegramBot.getUserRepository().save(user);
                 telegramBot.getUserDataRepository().save(newUd);
-                telegramBot.sendMessage(telegramBot.config.getChatId(), "А вот и новый пидарок нарисовался! Встречайте, @" + ", " + user.getFirstName() +
+                telegramBot.sendMessage(telegramBot.getChatId(), "А вот и новый пидарок нарисовался! Встречайте, @" + ", " + user.getFirstName() +
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
                         " перехватывает знамя. Это, кстати, уже его " + user.getPidorCount() + " раз.", "");
             }

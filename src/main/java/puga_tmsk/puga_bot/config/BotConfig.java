@@ -16,6 +16,6 @@ public class BotConfig {
     @Value("${bot.token}")
     String token;
 
-    @Value("${bot.chatId}")
-    long chatId;
+    @Value("${bot.timezone}")
+    String timeZone;
 }
