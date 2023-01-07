@@ -133,6 +133,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
+        nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
         log.info("[MAIN] Adding message count");
         UserData ud = new UserData();
         for (UserData udAll : userDataRepository.findAll()) {
