@@ -58,6 +58,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             log.error("Error setting bot command list: " + e.getMessage());
         }
+
+        checkPidor.startCheckPidor();
     }
 
     @Override
@@ -106,7 +108,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 switch (messageText) {
                     case "/start":
                     case "/start@pidor_scanner_bot":
-                        startCommandRecieved(msg);
+                        //startCommandRecieved(msg);
                         break;
                     case "/mydata":
                     case "/mydata@pidor_scanner_bot":
@@ -142,7 +144,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
         if (ud.getId() == 0) {
             ud.setId(userDataRepository.count() + 1);
-            ud.setUserId(msg.getFrom().getId());
+            ud.setUserId(userId);
             ud.setDate(nowDate);
             ud.setMessageCount(1);
             ud.setPidor(false);

@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import puga_tmsk.puga_bot.model.User;
 import puga_tmsk.puga_bot.model.UserData;
-
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -18,6 +16,7 @@ public class CheckPidor {
     private Thread thread;
     private TelegramBot telegramBot;
     private boolean checkPidorStatus = false;
+    private boolean isFirstStart = true;
 
 //    final private int TIME_ZONE = -4;
 
@@ -27,6 +26,13 @@ public class CheckPidor {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
+
+                try {
+                    Thread.sleep(8000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 Calendar checkDate = Calendar.getInstance();
                 checkDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
                 checkDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -42,31 +48,39 @@ public class CheckPidor {
                 today.set(Calendar.SECOND, 0);
                 today.set(Calendar.MILLISECOND, 0);
 
-                try {
-                    Thread.sleep(8000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Запускается блок проверки пидора, дата запуска ");
+
+
+
+                log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Запускается блок проверки пидора ");
 
                 try {
                     while (true) {
+
                         log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Цикл проверки запущен");
 
-                        List<UserData> pidorsData = new ArrayList<>();
-                        for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                            if (ud.getDate().getTime().equals(checkDate.getTime())) {
-                                log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Нашли запись за вчера");
-                                //if (ud.getMessageCount() < 3 && !ud.isPidor()) {
-                                if (ud.getMessageCount() < 3) {
-                                    log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Меньше 3 сообщений и без пометки - пидор найден");
+                        if (isFirstStart) {
+                            isFirstStart = false;
 
-                                    pidorsData.add(ud);
+                            log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Первый запуск, пропускаю проверку");
+                        } else {
+                            log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Не первый запуск, работаем");
+
+                            List<UserData> pidorsData = new ArrayList<>();
+                            for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
+                                if (ud.getDate().getTime().equals(checkDate.getTime())) {
+                                    log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Нашли запись за вчера");
+                                    //if (ud.getMessageCount() < 3 && !ud.isPidor()) {
+                                    if (ud.getMessageCount() < 3) {
+                                        log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Меньше 3 сообщений и без пометки - пидор найден");
+
+                                        pidorsData.add(ud);
+                                    }
                                 }
                             }
+
+                            setNewPidors(pidorsData, checkDate, today);
                         }
 
-                        setNewPidors(pidorsData, checkDate, today);
 
                         checkDate.add(Calendar.DATE,1);
                         today.add(Calendar.DATE,1);
