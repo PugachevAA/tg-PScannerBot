@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import puga_tmsk.puga_bot.model.User;
 import puga_tmsk.puga_bot.model.UserData;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -33,20 +35,34 @@ public class CheckPidor {
                     e.printStackTrace();
                 }
 
-                Calendar checkDate = Calendar.getInstance();
-                checkDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
-                checkDate.set(Calendar.HOUR_OF_DAY, 0);
-                checkDate.set(Calendar.MINUTE, 0);
-                checkDate.set(Calendar.SECOND, 0);
-                checkDate.set(Calendar.MILLISECOND, 0);
-                checkDate.add(Calendar.DATE, - 1);
+//                Calendar checkDate = Calendar.getInstance();
+//                checkDate.setTimeZone(TimeZone.getTimeZone(telegramBot.config.getTimeZone()));
+//                checkDate.set(Calendar.HOUR_OF_DAY, 0);
+//                checkDate.set(Calendar.MINUTE, 0);
+//                checkDate.set(Calendar.SECOND, 0);
+//                checkDate.set(Calendar.MILLISECOND, 0);
+//                checkDate.add(Calendar.DATE, - 1);
 
-                Calendar today = Calendar.getInstance();
-                today.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
-                today.set(Calendar.HOUR_OF_DAY, 0);
-                today.set(Calendar.MINUTE, 0);
-                today.set(Calendar.SECOND, 0);
-                today.set(Calendar.MILLISECOND, 0);
+                Timestamp checkDate2 = new Timestamp(System.currentTimeMillis());
+                checkDate2.setHours(0);
+                checkDate2.setMinutes(0);
+                checkDate2.setSeconds(0);
+                checkDate2.setNanos(0);
+                checkDate2.setDate(checkDate2.getDate() - 1);
+
+
+//                Calendar today = Calendar.getInstance();
+//                today.setTimeZone(TimeZone.getTimeZone(telegramBot.config.getTimeZone()));
+//                today.set(Calendar.HOUR_OF_DAY, 0);
+//                today.set(Calendar.MINUTE, 0);
+//                today.set(Calendar.SECOND, 0);
+//                today.set(Calendar.MILLISECOND, 0);
+
+                Timestamp today2 = new Timestamp(System.currentTimeMillis());
+                today2.setHours(0);
+                today2.setMinutes(0);
+                today2.setSeconds(0);
+                today2.setNanos(0);
 
 
 
@@ -67,7 +83,7 @@ public class CheckPidor {
 
                             List<UserData> pidorsData = new ArrayList<>();
                             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                                if (ud.getDate().getTime().equals(checkDate.getTime())) {
+                                if (ud.getDate().equals(checkDate2)) {
                                     log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Нашли запись за вчера");
                                     //if (ud.getMessageCount() < 3 && !ud.isPidor()) {
                                     if (ud.getMessageCount() < 3) {
@@ -78,12 +94,12 @@ public class CheckPidor {
                                 }
                             }
 
-                            setNewPidors(pidorsData, checkDate, today);
+                            setNewPidors(pidorsData, checkDate2, today2);
                         }
 
 
-                        checkDate.add(Calendar.DATE,1);
-                        today.add(Calendar.DATE,1);
+                        checkDate2.setDate(checkDate2.getDate() - 1).add(Calendar.DATE,1);
+                        today2.add(Calendar.DATE,1);
                         log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Время checkDate установлено на " + checkDate.getTime());
                         log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Время today установлено на " + today.getTime());
 
@@ -103,13 +119,13 @@ public class CheckPidor {
         thread.start();
     }
 
-    private void setNewPidors(List<UserData> pidorsData, Calendar checkDate, Calendar today) {
+    private void setNewPidors(List<UserData> pidorsData, Timestamp checkDate, Timestamp today) {
 
         User user;
 
         if (pidorsData.size() > 0) {
             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                if (ud.getDate().getTime().equals(today.getTime())) {
+                if (ud.getDate().equals(today.getTime())) {
                     ud.setPidor(false);
                     telegramBot.getUserDataRepository().save(ud);
                 }
@@ -120,7 +136,7 @@ public class CheckPidor {
                 UserData newUd = new UserData();
                 newUd.setId(telegramBot.getUserDataRepository().count() + 1);
                 newUd.setUserId(ud.getUserId());
-                newUd.setDate(today);
+                newUd.setDate(new Timestamp(today.getTimeInMillis()));
                 newUd.setMessageCount(0);
                 newUd.setPidor(true);
                 user = telegramBot.getUserRepository().findById(ud.getUserId()).get();
@@ -128,14 +144,14 @@ public class CheckPidor {
                 user.setPidorNow(true);
                 telegramBot.getUserRepository().save(user);
                 telegramBot.getUserDataRepository().save(newUd);
-                telegramBot.sendMessage(telegramBot.config.getChatId(), "А вот и новый пидарок нарисовался! Встречайте, @" + ", " + user.getFirstName() +
+                telegramBot.sendMessage(telegramBot.getChatId(), "А вот и новый пидарок нарисовался! Встречайте, @" + ", " + user.getFirstName() +
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
                         " перехватывает знамя. Это, кстати, уже его " + user.getPidorCount() + " раз.", "");
             }
         } else {
             List<String> lastPidors = new ArrayList<>();
             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                if (ud.getDate().getTime().equals(checkDate.getTime()) && ud.isPidor()) {
+                if (ud.getDate().equals(checkDate.getTime()) && ud.isPidor()) {
                     lastPidors.add("@" + telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName());
                 }
             }

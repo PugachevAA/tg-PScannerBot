@@ -18,10 +18,7 @@ import puga_tmsk.puga_bot.model.*;
 import puga_tmsk.puga_bot.service.keyboards.InLineKeyboards;
 import puga_tmsk.puga_bot.service.keyboards.ReplyKeyboards;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -82,7 +79,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
 
         Calendar nowDate = Calendar.getInstance();
-        nowDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
+        Timestamp nowDate2 = new Timestamp(System.currentTimeMillis());
+        nowDate2.setHours(0);
+        nowDate2.setMinutes(0);
+        nowDate2.setSeconds(0);
+        nowDate2.setNanos(0);
+        nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
         nowDate.set(Calendar.HOUR_OF_DAY, 0);
         nowDate.set(Calendar.MINUTE, 0);
         nowDate.set(Calendar.SECOND, 0);
@@ -122,7 +124,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                 log.info("[MAIN] Message has videonote");
 
-                addUserMessageCount(userId, nowDate, msg);
+                addUserMessageCount(userId, nowDate2, msg);
             }
         }
     }
@@ -132,12 +134,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage(chatId, userRepository.findById(userId).get().toString(),"");
     }
 
-    private void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
+    private void addUserMessageCount(long userId, Timestamp nowDate, Message msg) {
         log.info("[MAIN] Adding message count");
         UserData ud = new UserData();
         for (UserData udAll : userDataRepository.findAll()) {
-            log.debug(udAll.getDate().getTime().toString() + "   " + nowDate.getTime());
-            if (udAll.getUserId() == userId && udAll.getDate().getTime().equals(nowDate.getTime())) {
+            log.debug(udAll.getDate().getTime() + "   " + nowDate.getTime());
+            if (udAll.getUserId() == userId && udAll.getDate().equals(nowDate)) {
                 ud = udAll;
                 log.debug("[MAIN/addUserMessageCount] user finded");
             }
