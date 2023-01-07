@@ -1,6 +1,7 @@
 package puga_tmsk.puga_bot.service;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import puga_tmsk.puga_bot.config.BotConfig;
 import puga_tmsk.puga_bot.model.*;
+import puga_tmsk.puga_bot.service.apps.CheckPidor;
+import puga_tmsk.puga_bot.service.apps.UserActions;
 import puga_tmsk.puga_bot.service.keyboards.InLineKeyboards;
 import puga_tmsk.puga_bot.service.keyboards.ReplyKeyboards;
 import java.sql.Timestamp;
@@ -26,11 +29,13 @@ import java.util.TimeZone;
 @Slf4j
 @Component
 @Data
+@Getter
 public class TelegramBot extends TelegramLongPollingBot {
 
-    final BotConfig config;
+    private final BotConfig config;
     private long chatId;
     private CheckPidor checkPidor = new CheckPidor(this);
+    private UserActions userActions = new UserActions(this);
 
     @Autowired
     private UserRepository userRepository;
@@ -90,7 +95,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         log.info("[MAIN] Is updated. Now Date: " + nowDate.getTime());
         if (update.hasMessage()) {
 
-            registerUser(update.getMessage());
+            userActions.registerUser(update.getMessage());
 
             Message msg = update.getMessage();
 
@@ -111,7 +116,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         break;
                     case "/mydata":
                     case "/mydata@pidor_scanner_bot":
-                        getMyData(chatId, userId);
+                        userActions.getMyData(chatId, userId, nowDate);
                         break;
                     default:
                         sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
@@ -121,61 +126,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                 log.info("[MAIN] Message has videonote");
 
-                addUserMessageCount(userId, nowDate, msg);
+                userActions.addUserMessageCount(userId, nowDate, msg);
             }
         }
     }
 
-    private void getMyData(long chatId, long userId) {
-        log.info("[MAIN] check /mydata");
-        sendMessage(chatId, userRepository.findById(userId).get().toString(),"");
-    }
-
-    private void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
-        nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
-        log.info("[MAIN] Adding message count");
-        UserData ud = new UserData();
-        for (UserData udAll : userDataRepository.findAll()) {
-            log.info(udAll.getDate().getTime() + "   " + nowDate.getTimeInMillis());
-            Calendar cld = Calendar.getInstance();
-            cld.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
-            cld.setTime(udAll.getDate());
-            if (udAll.getUserId() == userId && udAll.getDate().getTime() == nowDate.getTimeInMillis()) {
-                ud = udAll;
-                log.info("[MAIN/addUserMessageCount] user finded");
-            }
-        }
-        if (ud.getId() == 0) {
-            ud.setId(userDataRepository.count() + 1);
-            ud.setUserId(userId);
-            ud.setDate(new Timestamp(nowDate.getTimeInMillis()));
-            ud.setMessageCount(1);
-            ud.setPidor(false);
-        } else {
-            ud.setMessageCount(ud.getMessageCount() + 1);
-        }
-        userDataRepository.save(ud);
-    }
-
-    private void registerUser(Message message) {
-        if(userRepository.findById(message.getFrom().getId()).isEmpty()) {
-
-            User user = new User();
-
-            user.setUserId(message.getFrom().getId());
-            user.setFirstName(message.getFrom().getFirstName());
-            user.setLastName(message.getFrom().getLastName());
-            user.setUserName(message.getFrom().getUserName());
-            user.setRegisterTime(new Timestamp(System.currentTimeMillis()));
-            user.setPidorCount(0);
-            user.setPidorNow(false);
 
 
-            userRepository.save(user);
-
-            log.info("User saved: " + user);
-        }
-    }
 
     private void startCommandRecieved(Message msg) throws TelegramApiException{
         String answer;

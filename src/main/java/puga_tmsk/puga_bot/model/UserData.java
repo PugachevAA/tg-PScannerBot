@@ -14,6 +14,7 @@ public class UserData {
 
     @Id
     private long id;
+    @Id
     private long userId;
     private Timestamp date;
     private long messageCount;

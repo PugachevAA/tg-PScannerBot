@@ -1,10 +1,11 @@
-package puga_tmsk.puga_bot.service;
+package puga_tmsk.puga_bot.service.apps;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.glassfish.grizzly.http.util.TimeStamp;
 import puga_tmsk.puga_bot.model.User;
 import puga_tmsk.puga_bot.model.UserData;
+import puga_tmsk.puga_bot.service.TelegramBot;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class CheckPidor {
     private Thread thread;
     private TelegramBot telegramBot;
     private boolean checkPidorStatus = false;
-    private boolean isFirstStart = false;
+    private boolean isFirstStart = true;
 
     public CheckPidor(TelegramBot tgb) {
         this.telegramBot = tgb;
@@ -35,7 +36,7 @@ public class CheckPidor {
                 }
 
                 Calendar checkDate = Calendar.getInstance();
-                checkDate.setTimeZone(TimeZone.getTimeZone(tgb.config.getTimeZone()));
+                checkDate.setTimeZone(TimeZone.getTimeZone(tgb.getConfig().getTimeZone()));
                 checkDate.set(Calendar.HOUR_OF_DAY, 0);
                 checkDate.set(Calendar.MINUTE, 0);
                 checkDate.set(Calendar.SECOND, 0);
@@ -43,7 +44,7 @@ public class CheckPidor {
                 checkDate.add(Calendar.DATE, - 1);
 
                 Calendar today = Calendar.getInstance();
-                today.setTimeZone(TimeZone.getTimeZone(tgb.config.getTimeZone()));
+                today.setTimeZone(TimeZone.getTimeZone(tgb.getConfig().getTimeZone()));
                 today.set(Calendar.HOUR_OF_DAY, 0);
                 today.set(Calendar.MINUTE, 0);
                 today.set(Calendar.SECOND, 0);
