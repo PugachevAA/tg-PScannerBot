@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 @Data
@@ -14,7 +15,7 @@ public class UserData {
     @Id
     private long id;
     private long userId;
-    private Calendar date;
+    private Timestamp date;
     private long messageCount;
     private boolean isPidor;
 }

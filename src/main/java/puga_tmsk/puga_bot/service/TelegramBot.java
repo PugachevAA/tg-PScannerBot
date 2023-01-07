@@ -59,7 +59,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             log.error("Error setting bot command list: " + e.getMessage());
         }
 
-        checkPidor.startCheckPidor();
+        //checkPidor.startCheckPidor();
     }
 
     @Override
@@ -138,7 +138,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         UserData ud = new UserData();
         for (UserData udAll : userDataRepository.findAll()) {
             log.info(udAll.getDate().getTime() + "   " + nowDate.getTime());
-            if (udAll.getUserId() == userId && udAll.getDate().getTime().equals(nowDate.getTime())) {
+            Calendar cld = Calendar.getInstance();
+            cld.setTime(udAll.getDate());
+            if (udAll.getUserId() == userId && cld.equals(nowDate)) {
                 ud = udAll;
                 log.info("[MAIN/addUserMessageCount] user finded");
             }
@@ -146,7 +148,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (ud.getId() == 0) {
             ud.setId(userDataRepository.count() + 1);
             ud.setUserId(userId);
-            ud.setDate(nowDate);
+            ud.setDate(new Timestamp(nowDate.getTimeInMillis()));
             ud.setMessageCount(1);
             ud.setPidor(false);
         } else {
