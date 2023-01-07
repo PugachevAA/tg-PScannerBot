@@ -80,11 +80,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
 
         Calendar nowDate = Calendar.getInstance();
+        nowDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
         nowDate.set(Calendar.HOUR_OF_DAY, 0);
         nowDate.set(Calendar.MINUTE, 0);
         nowDate.set(Calendar.SECOND, 0);
         nowDate.set(Calendar.MILLISECOND, 0);
-        nowDate.setTimeZone(TimeZone.getTimeZone("Asia/Tomsk"));
 
         log.info("[MAIN] Is updated. Now Date: " + nowDate.getTime());
         if (update.hasMessage()) {
@@ -131,10 +131,13 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
+        log.info("[MAIN] Adding message count");
         UserData ud = new UserData();
         for (UserData udAll : userDataRepository.findAll()) {
+            log.debug(udAll.getDate().getTime().toString() + "   " + nowDate.getTime());
             if (udAll.getUserId() == userId && udAll.getDate().getTime().equals(nowDate.getTime())) {
                 ud = udAll;
+                log.debug("[MAIN/addUserMessageCount] user finded");
             }
         }
         if (ud.getId() == 0) {
