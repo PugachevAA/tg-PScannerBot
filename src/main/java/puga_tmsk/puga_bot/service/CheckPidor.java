@@ -19,7 +19,7 @@ public class CheckPidor {
     private Thread thread;
     private TelegramBot telegramBot;
     private boolean checkPidorStatus = false;
-    private boolean isFirstStart = true;
+    private boolean isFirstStart = false;
 
     public CheckPidor(TelegramBot tgb) {
         this.telegramBot = tgb;

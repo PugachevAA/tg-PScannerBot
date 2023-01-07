@@ -59,7 +59,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             log.error("Error setting bot command list: " + e.getMessage());
         }
 
-        //checkPidor.startCheckPidor();
     }
 
     @Override
@@ -108,7 +107,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 switch (messageText) {
                     case "/start":
                     case "/start@pidor_scanner_bot":
-                        //startCommandRecieved(msg);
+                        startCommandRecieved(msg);
                         break;
                     case "/mydata":
                     case "/mydata@pidor_scanner_bot":
