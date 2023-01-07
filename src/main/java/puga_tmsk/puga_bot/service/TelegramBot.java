@@ -137,10 +137,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         log.info("[MAIN] Adding message count");
         UserData ud = new UserData();
         for (UserData udAll : userDataRepository.findAll()) {
-            log.info(udAll.getDate().getTime() + "   " + nowDate.getTime());
+            log.info(udAll.getDate().getTime() + "   " + nowDate.getTimeInMillis());
             Calendar cld = Calendar.getInstance();
+            cld.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
             cld.setTime(udAll.getDate());
-            if (udAll.getUserId() == userId && cld.equals(nowDate)) {
+            if (udAll.getUserId() == userId && udAll.getDate().getTime() == nowDate.getTimeInMillis()) {
                 ud = udAll;
                 log.info("[MAIN/addUserMessageCount] user finded");
             }

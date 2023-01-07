@@ -2,8 +2,11 @@ package puga_tmsk.puga_bot.service;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.glassfish.grizzly.http.util.TimeStamp;
 import puga_tmsk.puga_bot.model.User;
 import puga_tmsk.puga_bot.model.UserData;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -17,8 +20,6 @@ public class CheckPidor {
     private TelegramBot telegramBot;
     private boolean checkPidorStatus = false;
     private boolean isFirstStart = true;
-
-//    final private int TIME_ZONE = -4;
 
     public CheckPidor(TelegramBot tgb) {
         this.telegramBot = tgb;
@@ -67,7 +68,7 @@ public class CheckPidor {
 
                             List<UserData> pidorsData = new ArrayList<>();
                             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                                if (ud.getDate().getTime().equals(checkDate.getTime())) {
+                                if (ud.getDate().getTime() == checkDate.getTimeInMillis()) {
                                     log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Нашли запись за вчера");
                                     //if (ud.getMessageCount() < 3 && !ud.isPidor()) {
                                     if (ud.getMessageCount() < 3) {
@@ -109,7 +110,7 @@ public class CheckPidor {
 
         if (pidorsData.size() > 0) {
             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                if (ud.getDate().getTime().equals(today.getTime())) {
+                if (ud.getDate().getTime() == today.getTimeInMillis()) {
                     ud.setPidor(false);
                     telegramBot.getUserDataRepository().save(ud);
                 }
@@ -120,7 +121,7 @@ public class CheckPidor {
                 UserData newUd = new UserData();
                 newUd.setId(telegramBot.getUserDataRepository().count() + 1);
                 newUd.setUserId(ud.getUserId());
-                newUd.setDate(today);
+                newUd.setDate(new Timestamp(today.getTimeInMillis()));
                 newUd.setMessageCount(0);
                 newUd.setPidor(true);
                 user = telegramBot.getUserRepository().findById(ud.getUserId()).get();
@@ -135,7 +136,7 @@ public class CheckPidor {
         } else {
             List<String> lastPidors = new ArrayList<>();
             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                if (ud.getDate().getTime().equals(checkDate.getTime()) && ud.isPidor()) {
+                if (ud.getDate().getTime() == checkDate.getTimeInMillis() && ud.isPidor()) {
                     lastPidors.add("@" + telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName());
                 }
             }
