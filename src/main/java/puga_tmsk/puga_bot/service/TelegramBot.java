@@ -86,13 +86,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
 
         Calendar nowDate = Calendar.getInstance();
+        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Is updated. Now Date: " + nowDate.getTime());
         nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
+        log.info("[MAIN] Is updated. Now Date: " + nowDate.getTime());
         nowDate.set(Calendar.HOUR_OF_DAY, 0);
         nowDate.set(Calendar.MINUTE, 0);
         nowDate.set(Calendar.SECOND, 0);
         nowDate.set(Calendar.MILLISECOND, 0);
+        log.info("[MAIN] Update recieved: " + nowDate.getTime());
 
-        log.info("[MAIN] Is updated. Now Date: " + nowDate.getTime());
         if (update.hasMessage()) {
 
             userActions.registerUser(update.getMessage());

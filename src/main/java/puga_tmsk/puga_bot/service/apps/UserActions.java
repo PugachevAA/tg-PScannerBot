@@ -83,14 +83,11 @@ public class UserActions {
     }
 
     public void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
-        nowDate.setTimeZone(TimeZone.getTimeZone(telegramBot.getConfig().getTimeZone()));
+        //nowDate.setTimeZone(TimeZone.getTimeZone(telegramBot.getConfig().getTimeZone()));
         log.info("[MAIN] Adding message count");
         UserData ud = new UserData();
         for (UserData udAll : telegramBot.getUserDataRepository().findAll()) {
             log.info(udAll.getDate().getTime() + "   " + nowDate.getTimeInMillis());
-            Calendar cld = Calendar.getInstance();
-            cld.setTimeZone(TimeZone.getTimeZone(telegramBot.getConfig().getTimeZone()));
-            cld.setTime(udAll.getDate());
             if (udAll.getUserId() == userId && udAll.getDate().getTime() == nowDate.getTimeInMillis()) {
                 ud = udAll;
                 log.info("[MAIN/addUserMessageCount] user finded");
