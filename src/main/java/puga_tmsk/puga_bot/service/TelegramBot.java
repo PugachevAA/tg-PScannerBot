@@ -81,24 +81,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
+        log.info("[MAIN] Update recieved: " + new Timestamp(System.currentTimeMillis()));
 
         long userId;
         String messageText;
         String userFirstName;
         String userName;
         LocalDate nowDate = LocalDate.ofInstant(Instant.now(), ZoneId.of(config.getTimeZone()));
-        //Calendar nowDate = Calendar.getInstance();
-        //nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
-        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Update recieved: " + nowDate.atStartOfDay().toString());
-        //log.info("[MAIN] Update recieved: " + nowDate.getTime());
-        //nowDate.set(Calendar.HOUR_OF_DAY, 0);
-        //nowDate.set(Calendar.MINUTE, 0);
-        //nowDate.set(Calendar.SECOND, 0);
-        //nowDate.set(Calendar.MILLISECOND, 0);
-
-        //LocalDate ld = zdt.toLocalDate();
-        //LocalDateTime ldt = LocalDate.ofInstant(Instant.now(), ZoneId.of(config.getTimeZone())).atStartOfDay();
-        //log.info("[MAIN] ldt: " + ldt.toString());
+        log.info("[MAIN] LDT: " + LocalDateTime.ofInstant(Instant.now(), ZoneId.of(config.getTimeZone())).toString());
+        log.info("[MAIN] DT atStartOfDay: " + nowDate.atStartOfDay().toString());
         if (update.hasMessage()) {
 
             userActions.registerUser(update.getMessage());
