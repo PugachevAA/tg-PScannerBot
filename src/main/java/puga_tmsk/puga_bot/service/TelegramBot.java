@@ -21,6 +21,7 @@ import puga_tmsk.puga_bot.service.apps.UserActions;
 import puga_tmsk.puga_bot.service.keyboards.InLineKeyboards;
 import puga_tmsk.puga_bot.service.keyboards.ReplyKeyboards;
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -54,7 +55,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         this.config = config;
         List<BotCommand> menu = new ArrayList<>();
-        menu.add(new BotCommand("/start", "Запустить бота"));
+        //menu.add(new BotCommand("/start", "Запустить бота"));
         menu.add(new BotCommand("/mydata", "Данные обо мне"));
         //menu.add(new BotCommand("/help", "Помощь"));
 
@@ -64,6 +65,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             log.error("Error setting bot command list: " + e.getMessage());
         }
 
+        checkPidor.startCheckPidor();
     }
 
     @Override
@@ -86,14 +88,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
 
         Calendar nowDate = Calendar.getInstance();
-        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Is updated. Now Date: " + nowDate.getTime());
-        nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
-        log.info("[MAIN] Is updated. Now Date: " + nowDate.getTime());
+        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Update recieved: " + nowDate.getTime());
         nowDate.set(Calendar.HOUR_OF_DAY, 0);
         nowDate.set(Calendar.MINUTE, 0);
         nowDate.set(Calendar.SECOND, 0);
         nowDate.set(Calendar.MILLISECOND, 0);
         log.info("[MAIN] Update recieved: " + nowDate.getTime());
+        nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
+        log.info("[MAIN] Update recieved: " + nowDate.getTime());
+
 
         if (update.hasMessage()) {
 
@@ -105,6 +108,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             userName = msg.getFrom().getUserName();
             userFirstName = msg.getFrom().getFirstName();
             messageText = msg.getText();
+            chatId = msg.getChatId();
 
 
             log.info("[MAIN] It is message from: " + userFirstName);
@@ -112,10 +116,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (msg.hasText()) {
                 log.info("[MAIN] Message has text");
                 switch (messageText) {
-                    case "/start":
-                    case "/start@pidor_scanner_bot":
-                        startCommandRecieved(msg);
-                        break;
+                    //case "/start":
+                    //case "/start@pidor_scanner_bot":
+                    //    startCommandRecieved();
+                    //    break;
                     case "/mydata":
                     case "/mydata@pidor_scanner_bot":
                         userActions.getMyData(chatId, userId, nowDate);
@@ -135,10 +139,9 @@ public class TelegramBot extends TelegramLongPollingBot {
 
 
 
-
-    private void startCommandRecieved(Message msg) throws TelegramApiException{
+    //отключено чтобы не заебывать пацанов при перезагрузке
+    private void startCommandRecieved(){
         String answer;
-        chatId = msg.getChatId();
         if (!checkPidor.isCheckPidorStatus()) {
             checkPidor.startCheckPidor();
             answer = "Здарова, бедолаги :) \n\n"
@@ -155,7 +158,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textToSend);
-
 
 //        message.setReplyMarkup(inlineKeyboardMarkup);
 
