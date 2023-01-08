@@ -7,6 +7,7 @@ import puga_tmsk.puga_bot.model.User;
 import puga_tmsk.puga_bot.model.UserData;
 import puga_tmsk.puga_bot.service.TelegramBot;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.ArrayList;
@@ -81,10 +82,11 @@ public class CheckPidor {
                             log.info("[PIDOR SCANNER] Время checkDate установлено на " + checkDate);
                             log.info("[PIDOR SCANNER] Время today установлено на " + today);
                         long todayMillis = today.atStartOfDay().atZone(ZoneId.of(tgb.getConfig().getTimeZone())).toInstant().toEpochMilli();
-                        long nowMillis = LocalDateTime.now().atZone(ZoneId.of(tgb.getConfig().getTimeZone())).toInstant().toEpochMilli();
+                        long nowMillis = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
                             log.info("[PIDOR SCANNER] timeout func: " + today.atStartOfDay().atZone(ZoneId.of(tgb.getConfig().getTimeZone())) + " - " + LocalDateTime.now().atZone(ZoneId.of(tgb.getConfig().getTimeZone())));
                         long timeout = todayMillis - nowMillis;
-                            log.info("[PIDOR SCANNER] Усыпляем блок проверки на пидора на " + timeout + "ms");
+                            log.info("[PIDOR SCANNER] Усыпляем блок проверки на пидора на " + new Time(timeout).toString());
+                            log.info("[PIDOR SCANNER] Усыпляем блок проверки на пидора на " + timeout);
                         Thread.sleep(timeout);
                     }
                 } catch (InterruptedException e) {
