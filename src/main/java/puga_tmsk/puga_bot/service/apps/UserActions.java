@@ -9,6 +9,8 @@ import puga_tmsk.puga_bot.model.UserRepository;
 import puga_tmsk.puga_bot.service.TelegramBot;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -45,7 +47,7 @@ public class UserActions {
         }
     }
 
-    public void getMyData(long chatId, long userId, Calendar nowDate) {
+    public void getMyData(long chatId, long userId, LocalDate nowDate) {
         log.info("[MAIN] check /mydata");
         User user = telegramBot.getUserRepository().findById(userId).get();
         List<UserData> ud = new ArrayList<>();
@@ -61,7 +63,7 @@ public class UserActions {
 
         long msgCountToday = 0;
         for (UserData usd : ud) {
-            if (usd.getDate().getTime() == nowDate.getTimeInMillis())
+            if (usd.getDate().equals(nowDate))
                 msgCountToday = usd.getMessageCount();
         }
         String isPidorStr = "";
@@ -82,13 +84,13 @@ public class UserActions {
         telegramBot.sendMessage(chatId, answer,"");
     }
 
-    public void addUserMessageCount(long userId, Calendar nowDate, Message msg) {
+    public void addUserMessageCount(long userId, LocalDate nowDate, Message msg) {
         //nowDate.setTimeZone(TimeZone.getTimeZone(telegramBot.getConfig().getTimeZone()));
         log.info("[MAIN] Adding message count");
         UserData ud = new UserData();
         for (UserData udAll : telegramBot.getUserDataRepository().findAll()) {
-            log.info(udAll.getDate().getTime() + "   " + nowDate.getTimeInMillis());
-            if (udAll.getUserId() == userId && udAll.getDate().getTime() == nowDate.getTimeInMillis()) {
+            log.info(udAll.getDate() + "   " + nowDate);
+            if (udAll.getUserId() == userId && udAll.getDate().equals(nowDate)) {
                 ud = udAll;
                 log.info("[MAIN/addUserMessageCount] user finded");
             }
@@ -96,7 +98,7 @@ public class UserActions {
         if (ud.getId() == 0) {
             ud.setId(telegramBot.getUserDataRepository().count() + 1);
             ud.setUserId(userId);
-            ud.setDate(new Timestamp(nowDate.getTimeInMillis()));
+            ud.setDate(nowDate);
             ud.setMessageCount(1);
             ud.setPidor(false);
         } else {

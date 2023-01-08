@@ -21,9 +21,7 @@ import puga_tmsk.puga_bot.service.apps.UserActions;
 import puga_tmsk.puga_bot.service.keyboards.InLineKeyboards;
 import puga_tmsk.puga_bot.service.keyboards.ReplyKeyboards;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -88,23 +86,19 @@ public class TelegramBot extends TelegramLongPollingBot {
         String messageText;
         String userFirstName;
         String userName;
+        LocalDate nowDate = LocalDate.ofInstant(Instant.now(), ZoneId.of(config.getTimeZone()));
+        //Calendar nowDate = Calendar.getInstance();
+        //nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
+        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Update recieved: " + nowDate.atStartOfDay().toString());
+        //log.info("[MAIN] Update recieved: " + nowDate.getTime());
+        //nowDate.set(Calendar.HOUR_OF_DAY, 0);
+        //nowDate.set(Calendar.MINUTE, 0);
+        //nowDate.set(Calendar.SECOND, 0);
+        //nowDate.set(Calendar.MILLISECOND, 0);
 
-        Calendar nowDate = Calendar.getInstance();
-        nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
-        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Update recieved: " + nowDate.getTime());
-        log.info("[MAIN] Update recieved: " + nowDate.getTime());
-
-        nowDate.set(Calendar.HOUR_OF_DAY, 0);
-        nowDate.set(Calendar.MINUTE, 0);
-        nowDate.set(Calendar.SECOND, 0);
-        nowDate.set(Calendar.MILLISECOND, 0);
-
-        log.info("[MAIN] Update recieved: " + nowDate.getTime());
-        ZonedDateTime zdt = ZonedDateTime.now(TimeZone.getTimeZone(config.getTimeZone()).toZoneId());
-
-        log.info("[MAIN] zdt: " + zdt.toString());
-        LocalDateTime ldt = zdt.toLocalDateTime();
-        log.info("[MAIN] ldt: " + ldt.toString());
+        //LocalDate ld = zdt.toLocalDate();
+        //LocalDateTime ldt = LocalDate.ofInstant(Instant.now(), ZoneId.of(config.getTimeZone())).atStartOfDay();
+        //log.info("[MAIN] ldt: " + ldt.toString());
         if (update.hasMessage()) {
 
             userActions.registerUser(update.getMessage());
