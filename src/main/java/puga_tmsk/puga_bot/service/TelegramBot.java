@@ -89,7 +89,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
         LocalDate nowDate = LocalDate.ofInstant(Instant.now(), ZoneId.of(config.getTimeZone()));
         log.info("[MAIN] LDT: " + LocalDateTime.ofInstant(Instant.now(), ZoneId.of(config.getTimeZone())).toString());
-        log.info("[MAIN] DT atStartOfDay: " + nowDate.atStartOfDay().toString());
+        log.info("[MAIN] LT: " + nowDate.toString());
+        log.info("[MAIN] LT atStartOfDay: " + nowDate.atStartOfDay().toString());
         if (update.hasMessage()) {
 
             userActions.registerUser(update.getMessage());
