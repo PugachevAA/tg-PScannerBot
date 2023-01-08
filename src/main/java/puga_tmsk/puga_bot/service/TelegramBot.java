@@ -21,6 +21,8 @@ import puga_tmsk.puga_bot.service.apps.UserActions;
 import puga_tmsk.puga_bot.service.keyboards.InLineKeyboards;
 import puga_tmsk.puga_bot.service.keyboards.ReplyKeyboards;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -88,16 +90,21 @@ public class TelegramBot extends TelegramLongPollingBot {
         String userName;
 
         Calendar nowDate = Calendar.getInstance();
-        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Update recieved: " + nowDate.getTime());
         nowDate.setTimeZone(TimeZone.getTimeZone(config.getTimeZone()));
+        log.info(new Timestamp(System.currentTimeMillis()) + " [MAIN] Update recieved: " + nowDate.getTime());
         log.info("[MAIN] Update recieved: " + nowDate.getTime());
+
         nowDate.set(Calendar.HOUR_OF_DAY, 0);
         nowDate.set(Calendar.MINUTE, 0);
         nowDate.set(Calendar.SECOND, 0);
         nowDate.set(Calendar.MILLISECOND, 0);
+
         log.info("[MAIN] Update recieved: " + nowDate.getTime());
+        ZonedDateTime zdt = ZonedDateTime.now(TimeZone.getTimeZone(config.getTimeZone()).toZoneId());
 
-
+        log.info("[MAIN] zdt: " + zdt.toString());
+        LocalDateTime ldt = zdt.toLocalDateTime();
+        log.info("[MAIN] ldt: " + ldt.toString());
         if (update.hasMessage()) {
 
             userActions.registerUser(update.getMessage());
