@@ -108,7 +108,7 @@ public class CheckPidor {
                 telegramBot.getUserRepository().save(user);
                 telegramBot.getUserDataRepository().save(ud);
 
-                String answer = "А вот и новый пидарок нарисовался! Встречайте, @" + ", " + user.getFirstName() +
+                String answer = "Встречайте нового пидорка! " + ", " + user.getFirstName() +
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
                         " перехватывает знамя. Это, кстати, уже его " + user.getPidorCount() + " раз.";
 
@@ -122,7 +122,7 @@ public class CheckPidor {
                 }
             }
             if (lastPidors.size() > 0) {
-                telegramBot.sendMessage(telegramBot.getChatId(), "Сегодня новых пидоров не обнаружено, знамя по прежнему в руках: "
+                telegramBot.sendMessage(telegramBot.getChatId(), "Сегодня новых пидоров не обнаружено, знамя по прежнему в цепких ягодицах: "
                         + lastPidors.toString(), "");
             } else {
                 telegramBot.sendMessage(telegramBot.getChatId(), "Сегодня новых пидоров не обнаружено", "");
