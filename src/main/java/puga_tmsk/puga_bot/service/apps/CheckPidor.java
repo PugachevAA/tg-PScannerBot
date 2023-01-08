@@ -78,12 +78,13 @@ public class CheckPidor {
 
                         checkDate=checkDate.plusDays(1);
                         today=today.plusDays(1);
-                        log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Время checkDate установлено на " + checkDate);
-                        log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Время today установлено на " + today);
+                            log.info("[PIDOR SCANNER] Время checkDate установлено на " + checkDate);
+                            log.info("[PIDOR SCANNER] Время today установлено на " + today);
                         long todayMillis = today.atStartOfDay().atZone(ZoneId.of(tgb.getConfig().getTimeZone())).toInstant().toEpochMilli();
-                        long nowMillis = Instant.now().toEpochMilli();
+                        long nowMillis = LocalDateTime.now().atZone(ZoneId.of(tgb.getConfig().getTimeZone())).toInstant().toEpochMilli();
+                            log.info("[PIDOR SCANNER] timeout func: " + today.atStartOfDay().atZone(ZoneId.of(tgb.getConfig().getTimeZone())) + " - " + LocalDateTime.now().atZone(ZoneId.of(tgb.getConfig().getTimeZone())));
                         long timeout = todayMillis - nowMillis;
-                        log.info(Calendar.getInstance().getTime().toString() + " [PIDOR SCANNER] Усыпляем блок проверки на пидора на " + timeout + "ms");
+                            log.info("[PIDOR SCANNER] Усыпляем блок проверки на пидора на " + timeout + "ms");
                         Thread.sleep(timeout);
                     }
                 } catch (InterruptedException e) {
