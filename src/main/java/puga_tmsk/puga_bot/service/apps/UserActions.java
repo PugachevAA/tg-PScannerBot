@@ -10,11 +10,8 @@ import puga_tmsk.puga_bot.service.TelegramBot;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 @Slf4j
 @Getter
@@ -85,7 +82,6 @@ public class UserActions {
     }
 
     public void addUserMessageCount(long userId, LocalDate nowDate, Message msg) {
-        //nowDate.setTimeZone(TimeZone.getTimeZone(telegramBot.getConfig().getTimeZone()));
         log.info("[MAIN] Adding message count");
         UserData ud = new UserData();
         for (UserData udAll : telegramBot.getUserDataRepository().findAll()) {
@@ -96,11 +92,16 @@ public class UserActions {
             }
         }
         if (ud.getId() == 0) {
+            boolean isPidor = false;
+            LocalDate tomorrow = nowDate.minusDays(1);
+            if (telegramBot.getUserDataRepository().findFirstByUserIdOrderByDateDesc(userId).isPidor()) {
+                isPidor = true;
+            }
             ud.setId(telegramBot.getUserDataRepository().count() + 1);
             ud.setUserId(userId);
             ud.setDate(nowDate);
             ud.setMessageCount(1);
-            ud.setPidor(false);
+            ud.setPidor(isPidor);
         } else {
             ud.setMessageCount(ud.getMessageCount() + 1);
         }
