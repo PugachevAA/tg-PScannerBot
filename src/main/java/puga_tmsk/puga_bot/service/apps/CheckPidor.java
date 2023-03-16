@@ -43,6 +43,8 @@ public class CheckPidor {
 
                         log.info("[PIDOR SCANNER] Цикл проверки запущен");
 
+                        checkForAllUsersInCheckDate(checkDate);
+
                         if (isFirstStart) {
                             log.info("[PIDOR SCANNER] Первый запуск, пропускаю проверку");
 
@@ -81,6 +83,27 @@ public class CheckPidor {
             }
         });
     }
+
+    private void checkForAllUsersInCheckDate(LocalDate checkDate) {
+        for (User u : telegramBot.getUserRepository().findAll()) {
+            UserData ud = telegramBot.getUserDataRepository().findByUserIdAndDate(u.getUserId(), checkDate);
+            if (ud == null) {
+                Long count;
+                count = telegramBot.getUserDataRepository().findFirstByDateOrderByIdDesc(checkDate).getId();
+                if (count == null) {
+                    count = telegramBot.getUserDataRepository().count();
+                }
+                ud = new UserData();
+                ud.setId(count + 1);
+                ud.setUserId(u.getUserId());
+                ud.setMessageCount(0);
+                ud.setDate(checkDate);
+                ud.setPidor(false);
+                telegramBot.getUserDataRepository().save(ud);
+            }
+        }
+    }
+
     public void startCheckPidor() {
         checkPidorStatus = true;
         thread.start();
@@ -88,32 +111,44 @@ public class CheckPidor {
 
     private void setNewPidors(List<UserData> pidorsData, LocalDate checkDate, LocalDate today) {
 
-        User user;
+        //User user;
+        List<User> users = new ArrayList<>(telegramBot.getUserRepository().findAll());
 
         if (pidorsData.size() > 0) {
-            for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
-                if (ud.getDate().equals(today)) {
-                    ud.setPidor(false);
-                    telegramBot.getUserDataRepository().save(ud);
-                }
 
+            //Обнуляем пидорстатус всем за checkDate в табл UsersData
+            for (UserData ud : telegramBot.getUserDataRepository().findAllByDate(checkDate)) {
+                 ud.setPidor(false);
+                 telegramBot.getUserDataRepository().save(ud);
             }
+
+            //Обнуляем пидорстатус всем в табл Users
+            for (User u : users) {
+                u.setPidorNow(false);
+            }
+
             for (UserData ud : pidorsData) {
+
                 ud.setPidor(true);
 
-                user = telegramBot.getUserRepository().findById(ud.getUserId()).get();
-                user.setPidorCount(user.getPidorCount()+1);
-                user.setPidorNow(true);
+                for (User u : users) {
+                    if (u.getUserId() == ud.getUserId()) {
+                        u.setPidorNow(true);
+                        u.setPidorCount(u.getPidorCount() + 1);
+                    }
+                }
 
-                telegramBot.getUserRepository().save(user);
                 telegramBot.getUserDataRepository().save(ud);
 
-                String answer = "Встречайте нового пидорка! " + ", " + user.getFirstName() +
+                String answer = "Встречайте нового пидорка! @" + telegramBot.getUserRepository().findById(ud.getUserId()).get().getFirstName() +
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
-                        " перехватывает знамя. Это, кстати, уже его " + user.getPidorCount() + " раз.";
+                        " перехватывает знамя. Это, кстати, уже его " + telegramBot.getUserRepository().findById(ud.getUserId()).get().getPidorCount() + " раз.";
 
                 telegramBot.sendMessage(telegramBot.getChatId(), answer, "");
             }
+
+            telegramBot.getUserRepository().saveAll(users);
+
         } else {
             List<String> lastPidors = new ArrayList<>();
             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
