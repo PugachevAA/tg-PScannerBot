@@ -15,10 +15,9 @@ import java.util.Calendar;
 public class UserData {
 
     @Id
-//    @GeneratedValue
     private long id;
     private long userId;
-//    private Timestamp date;
+    private long getDataCount;
     private LocalDate date;
     private long messageCount;
     private boolean isPidor;

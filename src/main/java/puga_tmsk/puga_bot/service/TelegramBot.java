@@ -107,13 +107,12 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (msg.hasText()) {
                 log.info("[MAIN] Message has text");
                 switch (messageText) {
-                    //case "/start":
-                    //case "/start@pidor_scanner_bot":
-                    //    startCommandRecieved();
-                    //    break;
                     case "/mydata":
                     case "/mydata@pidor_scanner_bot":
                         userActions.getMyData(chatId, userId, nowDate);
+                        break;
+                    case "/stata":
+                        userActions.getAllStata(chatId);
                         break;
                     default:
                         sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);

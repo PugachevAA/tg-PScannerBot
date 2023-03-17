@@ -52,6 +52,7 @@ public class CheckPidor {
                         } else {
                             log.info("[PIDOR SCANNER] Не первый запуск, работаем");
 
+
                             List<UserData> pidorsData = new ArrayList<>();
                             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {
                                 if (ud.getDate().equals(checkDate)) {
@@ -84,24 +85,26 @@ public class CheckPidor {
         });
     }
 
+
     private void checkForAllUsersInCheckDate(LocalDate checkDate) {
         for (User u : telegramBot.getUserRepository().findAll()) {
             UserData ud = telegramBot.getUserDataRepository().findByUserIdAndDate(u.getUserId(), checkDate);
             if (ud == null) {
-                Long count;
-                count = telegramBot.getUserDataRepository().findFirstByDateOrderByIdDesc(checkDate).getId();
-                if (count == null) {
-                    count = telegramBot.getUserDataRepository().count();
-                }
+
                 ud = new UserData();
-                ud.setId(count + 1);
+                ud.setId(getUserDataLastCount() + 1);
                 ud.setUserId(u.getUserId());
                 ud.setMessageCount(0);
                 ud.setDate(checkDate);
-                ud.setPidor(false);
+                ud.setPidor(u.isPidorNow());
+                ud.setGetDataCount(0);
                 telegramBot.getUserDataRepository().save(ud);
             }
         }
+    }
+
+    private long getUserDataLastCount() {
+        return telegramBot.getUserDataRepository().findFirstByOrderByIdDesc().getId();
     }
 
     public void startCheckPidor() {
@@ -111,7 +114,6 @@ public class CheckPidor {
 
     private void setNewPidors(List<UserData> pidorsData, LocalDate checkDate, LocalDate today) {
 
-        //User user;
         List<User> users = new ArrayList<>(telegramBot.getUserRepository().findAll());
 
         if (pidorsData.size() > 0) {
@@ -130,7 +132,6 @@ public class CheckPidor {
             for (UserData ud : pidorsData) {
 
                 ud.setPidor(true);
-
                 for (User u : users) {
                     if (u.getUserId() == ud.getUserId()) {
                         u.setPidorNow(true);
@@ -142,7 +143,7 @@ public class CheckPidor {
 
                 String answer = "Встречайте нового пидорка! @" + telegramBot.getUserRepository().findById(ud.getUserId()).get().getFirstName() +
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
-                        " перехватывает знамя. Это, кстати, уже его " + telegramBot.getUserRepository().findById(ud.getUserId()).get().getPidorCount() + " раз.";
+                        " перехватывает знамя. Это, кстати, уже его " + (telegramBot.getUserRepository().findById(ud.getUserId()).get().getPidorCount()+ 1) + " раз.";
 
                 telegramBot.sendMessage(telegramBot.getChatId(), answer, "");
             }

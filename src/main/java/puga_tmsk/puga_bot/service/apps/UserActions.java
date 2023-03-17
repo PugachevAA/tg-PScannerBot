@@ -45,40 +45,69 @@ public class UserActions {
     }
 
     public void getMyData(long chatId, long userId, LocalDate nowDate) {
+        String answer = "";
+        String preAnswer = "";
+        String prePreAnswer = "";
         log.info("[MAIN] check /mydata");
-        User user = telegramBot.getUserRepository().findById(userId).get();
-        List<UserData> ud = new ArrayList<>();
-        for (UserData usd : telegramBot.getUserDataRepository().findAll()) {
-            if (userId == usd.getUserId()) {
-                ud.add(usd);
-            }
-        }
-        long msgCountAll = 0;
-        for (UserData usd : ud) {
-            msgCountAll += usd.getMessageCount();
-        }
 
         long msgCountToday = 0;
-        for (UserData usd : ud) {
-            if (usd.getDate().equals(nowDate))
-                msgCountToday = usd.getMessageCount();
+        long getDataCountToday = 0;
+        long msgCountAll = 0;
+        long getDataCountAll = 0;
+
+        User user = telegramBot.getUserRepository().findById(userId).get();
+        UserData udToday = telegramBot.getUserDataRepository().findByUserIdAndDate(userId, nowDate);
+        if (udToday == null) {
+            udToday = createAndGetEmptyTodayNote(userId, nowDate);
         }
+
+        List<UserData> udAll = new ArrayList<>();
+
+        for (UserData usd : telegramBot.getUserDataRepository().findAll()) {
+            if (userId == usd.getUserId()) {
+                udAll.add(usd);
+            }
+        }
+
+        if (udToday.getGetDataCount() == 1) {
+            preAnswer = " Опять чтоли?)";
+        } else if (udToday.getGetDataCount() == 2) {
+            preAnswer = ", ты издеваешься?";
+            prePreAnswer = "Да бляяяять...\n";
+        }
+
+        getDataCountToday = udToday.getGetDataCount();
+        msgCountToday = udToday.getMessageCount();
+
+        for (UserData usd : udAll) {
+            msgCountAll += usd.getMessageCount();
+            getDataCountAll += usd.getGetDataCount();
+        }
+
         String isPidorStr = "";
         if (user.isPidorNow()) {
-            isPidorStr = "пидор";
+            isPidorStr = "Пидор";
         } else {
 
-            isPidorStr = "не пидор";
+            isPidorStr = "Не пидор";
         }
-        String answer = user.getUserName() + "\n" +
-                        "Имя:" + user.getFirstName() + "\n" +
-                        "Фамилия:" + user.getLastName() + "\n" +
-                        "Дата регистрации " + user.getRegisterTime().toString() + "\n" +
-                        "Был пидором " + user.getPidorCount() + " раз" + "\n" +
+        answer = prePreAnswer +
+                        "@" + user.getUserName() + preAnswer + "\n\n" +
                         "Сообщений с даты регистрации: " + msgCountAll + "\n" +
-                        "Сообщений сегодня: " + msgCountToday+ "\n" +
+                        "Сообщений сегодня: " + msgCountToday + "\n" +
+//                        "Запросил свою стату сегодня: " + getDataCountToday + " раз" + "\n" +
+//                        "Запросил свою стату всего: " + msgCountToday  + " раз" + "\n" +
+                        "Был пидором " + user.getPidorCount() + " раз" + "\n" +
+                        "Был пидором " + telegramBot.getUserDataRepository().countAllByUserIdAndIsPidor(userId, true) + " дней" + "\n" +
                         "На данный момент в статусе: " + isPidorStr + "\n";
+
+        if (udToday.getGetDataCount() >2) {
+            answer = "@" + user.getUserName() + ", да пошел ты, заманал уже сегодня)) Завтра пробуй)";
+        }
         telegramBot.sendMessage(chatId, answer,"");
+
+        udToday.setGetDataCount(udToday.getGetDataCount() + 1);
+        telegramBot.getUserDataRepository().save(udToday);
     }
 
     public void addUserMessageCount(long userId, LocalDate nowDate, Message msg) {
@@ -107,4 +136,23 @@ public class UserActions {
         }
         telegramBot.getUserDataRepository().save(ud);
     }
+
+    public void getAllStata(long chatId) {
+        log.info("[UserActions] call stata method");
+
+    }
+
+    public UserData createAndGetEmptyTodayNote(long userId, LocalDate today) {
+        UserData userData = new UserData();
+        userData.setUserId(userId);
+        userData.setDate(today);
+        userData.setGetDataCount(0);
+        userData.setMessageCount(0);
+        userData.setId(telegramBot.getUserDataRepository().findFirstByOrderByIdDesc().getId() + 1);
+        userData.setPidor(telegramBot.getUserRepository().findById(userId).get().isPidorNow());
+        telegramBot.getUserDataRepository().save(userData);
+        return userData;
+    }
+
+
 }

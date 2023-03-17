@@ -15,4 +15,8 @@ public interface UserDataRepository  extends CrudRepository<UserData, Long> {
 
     UserData findFirstByDateOrderByIdDesc(LocalDate date);
 
+    UserData findFirstByOrderByIdDesc();
+
+    int countAllByUserIdAndIsPidor(long userId, boolean isPidor);
+
 }
