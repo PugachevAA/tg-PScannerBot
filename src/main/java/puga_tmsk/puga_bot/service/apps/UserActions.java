@@ -93,8 +93,7 @@ public class UserActions {
         }
 
                     //Для Гошана
-                    //long prikolUserId =  656161021;
-                    long prikolUserId =  445010278;
+                    long prikolUserId =  656161021;
                     if (userId == prikolUserId && msgCountToday > 2 )  {
                         msgCountToday = 2;
                     }
