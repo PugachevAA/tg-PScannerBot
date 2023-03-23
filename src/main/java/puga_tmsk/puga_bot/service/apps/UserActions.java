@@ -92,12 +92,6 @@ public class UserActions {
             isPidorStr = "Не пидор";
         }
 
-                    //Для Гошана
-                    long prikolUserId =  656161021;
-                    if (userId == prikolUserId && msgCountToday > 2 )  {
-                        msgCountToday = 2;
-                    }
-
 
         answer = prePreAnswer +
                         "@" + user.getUserName() + preAnswer + "\n\n" +
@@ -109,7 +103,7 @@ public class UserActions {
                         "Был пидором " + telegramBot.getUserDataRepository().countAllByUserIdAndIsPidor(userId, true) + " дней" + "\n" +
                         "На данный момент в статусе: " + isPidorStr + "\n";
 
-        if (udToday.getGetDataCount() >2 && userId != prikolUserId) {
+        if (udToday.getGetDataCount() >2) {
             answer = "@" + user.getUserName() + ", да пошел ты, заманал уже сегодня)) Завтра пробуй)";
         }
         telegramBot.sendMessage(chatId, answer,"");
