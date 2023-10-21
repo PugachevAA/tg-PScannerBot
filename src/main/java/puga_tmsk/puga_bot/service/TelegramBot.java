@@ -91,7 +91,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         log.info("[MAIN] nowDate: " + nowDate.toString());
         if (update.hasMessage()) {
 
-            userActions.registerUser(update.getMessage());
+            //userActions.registerUser(update.getMessage());
 
             Message msg = update.getMessage();
 

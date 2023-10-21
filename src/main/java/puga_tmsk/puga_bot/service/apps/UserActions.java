@@ -128,7 +128,7 @@ public class UserActions {
             if (telegramBot.getUserDataRepository().findFirstByUserIdOrderByDateDesc(userId).isPidor()) {
                 isPidor = true;
             }
-            ud.setId(telegramBot.getUserDataRepository().count() + 1);
+            ud.setId(telegramBot.getUserDataRepository().findFirstByIdOrderByIdDesc().getId() + 1);
             ud.setUserId(userId);
             ud.setDate(nowDate);
             ud.setMessageCount(1);

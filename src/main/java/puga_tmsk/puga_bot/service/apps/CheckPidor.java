@@ -141,7 +141,7 @@ public class CheckPidor {
 
                 telegramBot.getUserDataRepository().save(ud);
 
-                String answer = "Встречайте нового пидорка! @" + telegramBot.getUserRepository().findById(ud.getUserId()).get().getFirstName() +
+                String answer = "Встречайте нового пидорка! " + telegramBot.getUserRepository().findById(ud.getUserId()).get().getFirstName() + " @" +
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
                         " перехватывает знамя. Это, кстати, уже его " + (telegramBot.getUserRepository().findById(ud.getUserId()).get().getPidorCount()+ 1) + " раз.";
 
