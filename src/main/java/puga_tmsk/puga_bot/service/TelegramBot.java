@@ -117,21 +117,24 @@ public class TelegramBot extends TelegramLongPollingBot {
                             log.info("/mydata " + userName);
                             userActions.getMyData(chatId, userId, nowDate);
                             break;
+
                         case "/stata":
                             userActions.getAllStata(chatId);
                             break;
+
                         case "/chatid":
                         case "/chatid@pidor_scanner_bot":
                             log.info("/chatid" + userName);
                             adminActions.getChatId();
                             break;
+
                         default:
                             String defMessage = userName + ", нарываешься! Только кружки ;)";
                             log.info(userId + " = " + config.getAdminId());
                             if (userId == config.getAdminId()) {
                                 defMessage = "Как скажешь, господин";
                             }
-                            sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
+                            sendMessage(update.getMessage().getChatId(), defMessage, userName);
                     }
 
                 } else if (msg.hasVideoNote()) {
