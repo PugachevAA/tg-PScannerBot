@@ -59,6 +59,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<BotCommand> menu = new ArrayList<>();
         //menu.add(new BotCommand("/start", "Запустить бота"));
         menu.add(new BotCommand("/mydata", "Данные обо мне"));
+        menu.add(new BotCommand("/chatid", "chatid"));
         //menu.add(new BotCommand("/help", "Помощь"));
 
         try {
