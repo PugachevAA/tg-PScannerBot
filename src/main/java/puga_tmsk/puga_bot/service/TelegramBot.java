@@ -104,7 +104,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             messageText = msg.getText();
             chatId = msg.getChatId();
 
-            if (chatId == config.getAdminId()) {
+            if (chatId == Long.parseLong(config.getAdminId())) {
                 adminActions.helloAdmin();
             } else {
                 log.info("[MAIN] It is message from: " + userFirstName + ", chatid: " + chatId);
@@ -131,7 +131,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                         default:
                             String defMessage = userName + ", нарываешься! Только кружки ;)";
-                            if (userId == config.getAdminId()) {
+                            if (userId == Long.parseLong(config.getAdminId())) {
                                 defMessage = "Как скажешь, господин";
                             }
                             sendMessage(update.getMessage().getChatId(), defMessage, userName);

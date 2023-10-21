@@ -20,5 +20,5 @@ public class BotConfig {
     String timeZone;
 
     @Value("${admin.id}")
-    long adminId;
+    String adminId;
 }
