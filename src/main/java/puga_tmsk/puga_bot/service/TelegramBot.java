@@ -107,10 +107,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (chatId == config.getAdminId()) {
                 adminActions.helloAdmin();
             } else {
-                log.info("[MAIN] It is message from: " + userFirstName);
+                log.info("[MAIN] It is message from: " + userFirstName + ", chatid: " + chatId);
 
                 if (msg.hasText()) {
                     log.info("[MAIN] Message has text");
+                    log.info(userId + " = " + config.getAdminId());
                     switch (messageText) {
                         case "/mydata":
                         case "/mydata@pidor_scanner_bot":
@@ -130,7 +131,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                         default:
                             String defMessage = userName + ", нарываешься! Только кружки ;)";
-                            log.info(userId + " = " + config.getAdminId());
                             if (userId == config.getAdminId()) {
                                 defMessage = "Как скажешь, господин";
                             }
