@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import puga_tmsk.puga_bot.config.BotConfig;
 import puga_tmsk.puga_bot.model.*;
+import puga_tmsk.puga_bot.service.apps.AdminActions;
 import puga_tmsk.puga_bot.service.apps.CheckPidor;
 import puga_tmsk.puga_bot.service.apps.UserActions;
 import puga_tmsk.puga_bot.service.keyboards.InLineKeyboards;
@@ -37,6 +38,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private long chatId;
     private CheckPidor checkPidor = new CheckPidor(this);
     private UserActions userActions = new UserActions(this);
+    private AdminActions adminActions = new AdminActions(this);
 
     @Autowired
     private UserRepository userRepository;
@@ -101,28 +103,31 @@ public class TelegramBot extends TelegramLongPollingBot {
             messageText = msg.getText();
             chatId = msg.getChatId();
 
+            if (chatId == config.getAdminId()) {
+                adminActions.helloAdmin();
+            } else {
+                log.info("[MAIN] It is message from: " + userFirstName);
 
-            log.info("[MAIN] It is message from: " + userFirstName);
+                if (msg.hasText()) {
+                    log.info("[MAIN] Message has text");
+                    switch (messageText) {
+                        case "/mydata":
+                        case "/mydata@pidor_scanner_bot":
+                            userActions.getMyData(chatId, userId, nowDate);
+                            break;
+                        case "/stata":
+                            userActions.getAllStata(chatId);
+                            break;
+                        default:
+                            sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
+                    }
 
-            if (msg.hasText()) {
-                log.info("[MAIN] Message has text");
-                switch (messageText) {
-                    case "/mydata":
-                    case "/mydata@pidor_scanner_bot":
-                        userActions.getMyData(chatId, userId, nowDate);
-                        break;
-                    case "/stata":
-                        userActions.getAllStata(chatId);
-                        break;
-                    default:
-                        sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
+                } else if (msg.hasVideoNote()) {
+
+                    log.info("[MAIN] Message has videonote");
+
+                    userActions.addUserMessageCount(userId, nowDate, msg);
                 }
-
-            } else if (msg.hasVideoNote()) {
-
-                log.info("[MAIN] Message has videonote");
-
-                userActions.addUserMessageCount(userId, nowDate, msg);
             }
         }
     }

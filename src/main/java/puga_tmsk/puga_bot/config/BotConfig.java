@@ -18,4 +18,7 @@ public class BotConfig {
 
     @Value("${bot.timezone}")
     String timeZone;
+
+    @Value("${admin.id}")
+    long adminId;
 }
