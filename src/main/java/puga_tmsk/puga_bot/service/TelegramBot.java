@@ -122,6 +122,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                             adminActions.getChatId();
                             break;
                         default:
+                            String defMessage = userName + ", нарываешься! Только кружки ;)";
+                            if (userId == config.getAdminId()) {
+                                defMessage = "Как скажешь, господин";
+                            }
                             sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
                     }
 
