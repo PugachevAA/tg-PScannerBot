@@ -113,16 +113,20 @@ public class TelegramBot extends TelegramLongPollingBot {
                     switch (messageText) {
                         case "/mydata":
                         case "/mydata@pidor_scanner_bot":
+                            log.info("/mydata " + userName);
                             userActions.getMyData(chatId, userId, nowDate);
                             break;
                         case "/stata":
                             userActions.getAllStata(chatId);
                             break;
                         case "/chatid":
+                        case "/chatid@pidor_scanner_bot":
+                            log.info("/chatid" + userName);
                             adminActions.getChatId();
                             break;
                         default:
                             String defMessage = userName + ", нарываешься! Только кружки ;)";
+                            log.info(userId + " = " + config.getAdminId());
                             if (userId == config.getAdminId()) {
                                 defMessage = "Как скажешь, господин";
                             }
