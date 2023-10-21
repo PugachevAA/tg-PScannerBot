@@ -59,7 +59,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<BotCommand> menu = new ArrayList<>();
         //menu.add(new BotCommand("/start", "Запустить бота"));
         menu.add(new BotCommand("/mydata", "Данные обо мне"));
-        menu.add(new BotCommand("/chatid", "chatid"));
         //menu.add(new BotCommand("/help", "Помощь"));
 
         try {
@@ -94,8 +93,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         log.info("[MAIN] nowDate: " + nowDate.toString());
         if (update.hasMessage()) {
 
-            //userActions.registerUser(update.getMessage());
-
             Message msg = update.getMessage();
 
             userId = msg.getFrom().getId();
@@ -104,11 +101,13 @@ public class TelegramBot extends TelegramLongPollingBot {
             messageText = msg.getText();
             chatId = msg.getChatId();
 
-            if (chatId == Long.parseLong(config.getAdminId())) {
+            if (chatId == config.getAdminId()) {
                 adminActions.helloAdmin();
-            } else {
+            } else if (chatId == config.getOurCaId()) {
+
                 log.info("[MAIN] It is message from: " + userFirstName + ", chatid: " + chatId);
 
+                userActions.registerUser(update.getMessage());
                 if (msg.hasText()) {
                     log.info("[MAIN] Message has text");
                     log.info(userId + " = " + config.getAdminId());
@@ -124,14 +123,13 @@ public class TelegramBot extends TelegramLongPollingBot {
                             break;
 
                         case "/chatid":
-                        case "/chatid@pidor_scanner_bot":
                             log.info("/chatid" + userName);
                             adminActions.getChatId();
                             break;
 
                         default:
                             String defMessage = userName + ", нарываешься! Только кружки ;)";
-                            if (userId == Long.parseLong(config.getAdminId())) {
+                            if (userId == config.getAdminId()) {
                                 defMessage = "Как скажешь, господин";
                             }
                             sendMessage(update.getMessage().getChatId(), defMessage, userName);

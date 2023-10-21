@@ -51,7 +51,7 @@ public class CheckPidor {
                             isFirstStart = false;
                         } else {
                             log.info("[PIDOR SCANNER] Не первый запуск, работаем");
-
+                            telegramBot.setChatId(telegramBot.getConfig().getOurCaId());
 
                             List<UserData> pidorsData = new ArrayList<>();
                             for (UserData ud : telegramBot.getUserDataRepository().findAll()) {

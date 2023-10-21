@@ -17,7 +17,6 @@ public interface UserDataRepository  extends CrudRepository<UserData, Long> {
 
     UserData findFirstByOrderByIdDesc();
 
-    UserData findFirstByIdOrderByIdDesc();
 
     int countAllByUserIdAndIsPidor(long userId, boolean isPidor);
 
