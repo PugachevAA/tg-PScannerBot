@@ -118,6 +118,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                         case "/stata":
                             userActions.getAllStata(chatId);
                             break;
+                        case "/chatid":
+                            adminActions.getChatId();
+                            break;
                         default:
                             sendMessage(update.getMessage().getChatId(), userName + ", нарываешься! Только кружки ;)", userName);
                     }

@@ -16,4 +16,8 @@ public class AdminActions {
     public void helloAdmin() {
         telegramBot.sendMessage(telegramBot.getChatId(), "Hello, Admin ", null);
     }
+
+    public void getChatId() {
+        telegramBot.sendMessage(telegramBot.getChatId(), telegramBot.getChatId() + " ", null);
+    }
 }
