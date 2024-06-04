@@ -2,47 +2,38 @@ package puga_tmsk.puga_bot.service.keyboards;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import puga_tmsk.puga_bot.service.TelegramBot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InLineKeyboards {
 
-//    public InlineKeyboardMarkup getMainInLineKeyboard() {
-//
-//        List<List<InlineKeyboardButton>> keyboardRows = new ArrayList<>();
-//
-//        List<InlineKeyboardButton> keyboardRow1 = new ArrayList<>();
-//
-//        InlineKeyboardButton shoppingList = new InlineKeyboardButton();
-//        shoppingList.setText("Список покупок");
-//        shoppingList.setCallbackData("/shoppinglist");
-//        keyboardRow1.add(shoppingList);
-//
-//
-//        List<InlineKeyboardButton> keyboardRow2 = new ArrayList<>();
-//
-//        InlineKeyboardButton wishList = new InlineKeyboardButton();
-//        wishList.setText("Вишлист");
-//        wishList.setCallbackData("/wishlist");
-//        keyboardRow2.add(wishList);
-//
-//        List<InlineKeyboardButton> keyboardRow3 = new ArrayList<>();
-//
-//        InlineKeyboardButton reminder = new InlineKeyboardButton();
-//        reminder.setText("Напоминания");
-//        reminder.setCallbackData("/reminder");
-//        keyboardRow3.add(reminder);
-//
-//        keyboardRows.add(keyboardRow1);
-////        keyboardRows.add(keyboardRow2);
-////        keyboardRows.add(keyboardRow3);
-//
-//        final InlineKeyboardMarkup mainInLineKeyboard = new InlineKeyboardMarkup();
-//        mainInLineKeyboard.setKeyboard(keyboardRows);
-//
-//        return mainInLineKeyboard;
-//    }
+    TelegramBot telegramBot;
+    public InLineKeyboards(TelegramBot tgb) {
+        telegramBot = tgb;
+    }
+
+    public InlineKeyboardMarkup rouletteShot(long userId) {
+
+        List<List<InlineKeyboardButton>> keyboardRows = new ArrayList<>();
+
+        List<InlineKeyboardButton> keyboardRow1 = new ArrayList<>();
+
+        InlineKeyboardButton btn1 = new InlineKeyboardButton();
+        btn1.setText("Выстрелить");
+        btn1.setCallbackData("/pidroulette_shot_" + userId);
+        keyboardRow1.add(btn1);
+
+
+
+        keyboardRows.add(keyboardRow1);
+
+        final InlineKeyboardMarkup mainInLineKeyboard = new InlineKeyboardMarkup();
+        mainInLineKeyboard.setKeyboard(keyboardRows);
+
+        return mainInLineKeyboard;
+    }
 
 //    public InlineKeyboardMarkup getShoppingListKeyboard(Long chatId, String message) {
 

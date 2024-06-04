@@ -145,7 +145,7 @@ public class CheckPidor {
                         telegramBot.getUserRepository().findById(ud.getUserId()).get().getUserName() +
                         " перехватывает знамя. Это, кстати, уже его " + (telegramBot.getUserRepository().findById(ud.getUserId()).get().getPidorCount()+ 1) + " раз.";
 
-                telegramBot.sendMessage(telegramBot.getChatId(), answer, "");
+                telegramBot.sendMessage(answer, "", null);
             }
 
             telegramBot.getUserRepository().saveAll(users);
@@ -158,10 +158,10 @@ public class CheckPidor {
                 }
             }
             if (lastPidors.size() > 0) {
-                telegramBot.sendMessage(telegramBot.getChatId(), "Сегодня новых пидоров не обнаружено, знамя по прежнему в цепких ягодицах: "
-                        + lastPidors.toString(), "");
+                telegramBot.sendMessage("Сегодня новых пидоров не обнаружено, знамя по прежнему в цепких ягодицах: "
+                        + lastPidors.toString(), "", null);
             } else {
-                telegramBot.sendMessage(telegramBot.getChatId(), "Сегодня новых пидоров не обнаружено", "");
+                telegramBot.sendMessage("Сегодня новых пидоров не обнаружено", "", null);
             }
         }
 

@@ -4,20 +4,29 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.engine.spi.ManagedEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
+import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import puga_tmsk.puga_bot.config.BotConfig;
+import puga_tmsk.puga_bot.config.BotStatus;
 import puga_tmsk.puga_bot.model.*;
 import puga_tmsk.puga_bot.service.apps.AdminActions;
 import puga_tmsk.puga_bot.service.apps.CheckPidor;
+import puga_tmsk.puga_bot.service.apps.RusRoulette;
 import puga_tmsk.puga_bot.service.apps.UserActions;
 import puga_tmsk.puga_bot.service.keyboards.InLineKeyboards;
 import puga_tmsk.puga_bot.service.keyboards.ReplyKeyboards;
@@ -39,6 +48,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     private CheckPidor checkPidor = new CheckPidor(this);
     private UserActions userActions = new UserActions(this);
     private AdminActions adminActions = new AdminActions(this);
+    private RusRoulette rusRoulette = new RusRoulette(this);
+    private final ReplyKeyboards replyKeyboards = new ReplyKeyboards();;
+    private final InLineKeyboards inLineKeyboards = new InLineKeyboards(this);
 
     @Autowired
     private UserRepository userRepository;
@@ -50,16 +62,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private static final String HELP_TEXT = "Pidor scanner v1.0";
 
-    ReplyKeyboards replyKeyboards = new ReplyKeyboards();
-    InLineKeyboards inLineKeyboards = new InLineKeyboards();
-
     public TelegramBot(BotConfig config) {
 
         this.config = config;
         List<BotCommand> menu = new ArrayList<>();
-        //menu.add(new BotCommand("/start", "Запустить бота"));
         menu.add(new BotCommand("/mydata", "Данные обо мне"));
-        //menu.add(new BotCommand("/help", "Помощь"));
+        menu.add(new BotCommand("/pidroulette", "Рулетка для сильных духом))"));
 
         try {
             this.execute(new SetMyCommands(menu, new BotCommandScopeDefault(), null));
@@ -99,11 +107,9 @@ public class TelegramBot extends TelegramLongPollingBot {
             userName = msg.getFrom().getUserName();
             userFirstName = msg.getFrom().getFirstName();
             messageText = msg.getText();
-            chatId = msg.getChatId();
+            chatId = config.getOurCaId();
 
-            if (chatId == config.getAdminId()) {
-                adminActions.helloAdmin();
-            } else if (chatId == config.getOurCaId()) {
+            if (chatId == config.getOurCaId()) {
 
                 log.info("[MAIN] It is message from: " + userFirstName + ", chatid: " + chatId);
 
@@ -126,13 +132,17 @@ public class TelegramBot extends TelegramLongPollingBot {
                             log.info("/chatid" + userName);
                             adminActions.getChatId();
                             break;
+                        case "/pidroulette":
+                            log.info("/pidroulette" + userName);
+                            rusRoulette.startGame(msg);
+                            break;
 
                         default:
                             String defMessage = userName + ", нарываешься! Только кружки ;)";
                             if (userId == config.getAdminId()) {
                                 defMessage = "Как скажешь, господин";
                             }
-                            sendMessage(update.getMessage().getChatId(), defMessage, userName);
+                            sendMessage( defMessage, userName, null);
                     }
 
                 } else if (msg.hasVideoNote()) {
@@ -141,6 +151,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                     userActions.addUserMessageCount(userId, nowDate, msg);
                 }
+            }
+        }else if (update.hasPoll()) {
+            rusRoulette.checkPoll(update.getPoll());
+        } else if (update.hasCallbackQuery()) {
+            if (update.getCallbackQuery().getData().contains("/pidroulette")) {
+                rusRoulette.callbackHandler(update.getCallbackQuery());
             }
         }
     }
@@ -159,13 +175,16 @@ public class TelegramBot extends TelegramLongPollingBot {
             answer = "Функция ПидорСканнер уже запущена.";
         }
 
-        sendMessage(chatId, answer, "");
+        sendMessage(answer, "", null);
     }
 
-    public void sendMessage(long chatId, String textToSend, String userName) {
+    public void sendMessage(String textToSend, String userName, InlineKeyboardMarkup inlineKeyboardMarkup ) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textToSend);
+        if(inlineKeyboardMarkup != null) {
+            message.setReplyMarkup(inlineKeyboardMarkup);
+        }
 
 //        message.setReplyMarkup(inlineKeyboardMarkup);
 
@@ -175,6 +194,61 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
         catch (TelegramApiException e) {
             log.error("send error:" + e);
+        }
+    }
+
+
+    public void editMessage(Integer messageId, String newText, InlineKeyboardMarkup mainInLineKeyboard) {
+
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setReplyMarkup(mainInLineKeyboard);
+        editMessageReplyMarkup.setChatId(String.valueOf(chatId));
+        editMessageReplyMarkup.setMessageId(messageId);
+
+        try {
+            if (!newText.equals("")) {
+                EditMessageText editMessageText = new EditMessageText();
+                editMessageText.setChatId(String.valueOf(chatId));
+                editMessageText.setMessageId(messageId);
+                editMessageText.setText(newText);
+                execute(editMessageText);
+                log.info("Edit message");
+
+            }
+            execute(editMessageReplyMarkup);
+            log.info("Edit message");
+        }
+        catch (TelegramApiException e) {
+            log.error("edit error:" + e);
+        }
+    }
+
+    public void sendPoll(String question, List< String > options) {
+        SendPoll sendPoll = new SendPoll();
+        sendPoll.setChatId(String.valueOf(chatId));
+        sendPoll.setQuestion(question);
+        sendPoll.setOptions(options);
+
+        try {
+            execute(sendPoll);
+            log.info("[MAIN] send poll");
+        }
+        catch (TelegramApiException e) {
+            log.error("send poll error:" + e);
+        }
+    }
+
+    public void deleteMessage(Integer msgId) {
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setMessageId(msgId);
+        deleteMessage.setChatId(String.valueOf(chatId));
+
+        try {
+            execute(deleteMessage);
+            log.info("[MAIN] delete message");
+        }
+        catch (TelegramApiException e) {
+            log.error("delete message error:" + e);
         }
     }
 

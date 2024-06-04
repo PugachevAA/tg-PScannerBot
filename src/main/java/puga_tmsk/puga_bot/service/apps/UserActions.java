@@ -106,7 +106,7 @@ public class UserActions {
         if (udToday.getGetDataCount() >2) {
             answer = "@" + user.getUserName() + ", да пошел ты, заманал уже сегодня)) Завтра пробуй)";
         }
-        telegramBot.sendMessage(chatId, answer,"");
+        telegramBot.sendMessage(answer,"", null);
 
         udToday.setGetDataCount(udToday.getGetDataCount() + 1);
         telegramBot.getUserDataRepository().save(udToday);
@@ -125,10 +125,19 @@ public class UserActions {
         if (ud.getId() == 0) {
             boolean isPidor = false;
             LocalDate tomorrow = nowDate.minusDays(1);
-            if (telegramBot.getUserDataRepository().findFirstByUserIdOrderByDateDesc(userId).isPidor()) {
-                isPidor = true;
+
+//            if (telegramBot.getUserDataRepository().findFirstByUserIdOrderByDateDesc(userId).isPidor()) {
+//                isPidor = true;
+//            }
+
+            isPidor = telegramBot.getUserRepository().findByUserId(userId).isPidorNow();
+
+            //Если еще нет записей
+            if (telegramBot.getUserDataRepository().findFirstByOrderByIdDesc() == null) {
+                ud.setId(1);
+            } else {
+                ud.setId(telegramBot.getUserDataRepository().findFirstByOrderByIdDesc().getId() + 1);
             }
-            ud.setId(telegramBot.getUserDataRepository().findFirstByOrderByIdDesc().getId() + 1);
             ud.setUserId(userId);
             ud.setDate(nowDate);
             ud.setMessageCount(1);

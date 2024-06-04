@@ -14,10 +14,10 @@ public class AdminActions {
     }
 
     public void helloAdmin() {
-        telegramBot.sendMessage(telegramBot.getChatId(), "Hello, Admin ", null);
+        telegramBot.sendMessage( "Hello, Admin ", null, null);
     }
 
     public void getChatId() {
-        telegramBot.sendMessage(telegramBot.getChatId(), telegramBot.getChatId() + " ", null);
+        telegramBot.sendMessage( telegramBot.getChatId() + " ", null, null);
     }
 }
